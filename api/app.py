@@ -20,7 +20,7 @@ def bad_request(error):
 # The main part of the API, converts currencies.
 @app.route('/currency_converter', methods=['GET'])
 def convert():
-    amount = request.args.get('amount', type=int)
+    amount = request.args.get('amount', type=float)
     inp_cur = request.args.get('input_currency')
     out_cur = request.args.get('output_currency')
 
@@ -55,4 +55,4 @@ def convert():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8080)

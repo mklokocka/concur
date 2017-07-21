@@ -1,14 +1,21 @@
+import requests
+import requests_cache
+from datetime import timedelta
 from flask import Flask, request, jsonify, abort, make_response
 
-app = Flask(__name__)
+# Use a free API for the rates, better and more comprehensive ones are paid.
+RATES_URL = 'http://api.fixer.io/latest'
 
-# Trivial conversion table for now.
-# TODO: Replace with a DB for retrieving and caching of actual rates.
+# Set up caching
+expiration = timedelta(days=1)
+requests_cache.install_cache(expire_after=expiration, old_data_on_error=True)
+
+# Set up conversion table
 conversion_table = {
-    'CZK': 1,
-    'USD': 0.044,
-    'EUR': 0.038
+    'EUR': 1
 }
+
+app = Flask(__name__)
 
 
 # Handle 400 with a json.
@@ -17,12 +24,23 @@ def bad_request(error):
     return make_response(jsonify({'error': 'Bad request'}), 400)
 
 
+# Makes sure we have the current exchange rates.
+def update_rates():
+    resp = requests.get(RATES_URL, timeout=0.1)
+
+    rates_data = resp.json()
+    for cur, value in rates_data['rates'].items():
+        conversion_table[cur] = value
+
+
 # The main part of the API, converts currencies.
 @app.route('/currency_converter', methods=['GET'])
 def convert():
     amount = request.args.get('amount', type=float)
     inp_cur = request.args.get('input_currency')
     out_cur = request.args.get('output_currency')
+
+    update_rates()
 
     # Check if the required arguments are present.
     if amount is None or inp_cur is None:
@@ -55,4 +73,4 @@ def convert():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+    app.run(debug=True, host='0.0.0.0', port=8080)

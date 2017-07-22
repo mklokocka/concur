@@ -8,8 +8,8 @@ URL_BASE = 'http://{0}:8080/currency_converter'
 
 @click.command()
 @click.option('--amount', type=click.FLOAT, help='Amount to convert.')
-@click.option('--input-currency', help='The currency to convert from.')
-@click.option('--output-currency', default=None,
+@click.option('--input_currency', help='The currency to convert from.')
+@click.option('--output_currency', default=None,
               help='Optional. The currency to convert to.')
 @click.option('--host', default='localhost',
               help='Optional. The host hosting the conversion API.')
@@ -29,7 +29,7 @@ def convert(amount, input_currency, output_currency, host):
         params['output_currency'] = output_currency
 
     try:
-        resp = requests.get(URL_BASE.format(host), params=params, timeout=0.1)
+        resp = requests.get(URL_BASE.format(host), params=params, timeout=0.5)
         resp.raise_for_status()
     except requests.HTTPError:
         raise click.UsageError('Did you enter the right amount and '

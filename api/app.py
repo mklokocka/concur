@@ -83,7 +83,7 @@ def convert_endpoint():
     ct = conversion_table
     conversions = {
         inp_cur: {
-               out_cur: amount / ct[inp_cur] * ct[out_cur]
+               out_cur: round(amount / ct[inp_cur] * ct[out_cur], 2)
                for out_cur in output_currencies
         }
         for inp_cur in input_currencies}

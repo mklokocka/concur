@@ -8,7 +8,7 @@ from babel.numbers import get_currency_symbol
 RATES_URL = 'http://api.fixer.io/latest'
 
 # Set up caching
-expiration = timedelta(days=1)
+expiration = timedelta(hours=1)
 requests_cache.install_cache(expire_after=expiration, old_data_on_error=True)
 
 # Set up conversion table
